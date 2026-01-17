@@ -1,0 +1,44 @@
+{
+  "permissions": {
+    "defaultMode": "plan",
+    "allow": [
+      "Read(*.java)",
+      "Read(pom.xml)",
+      "Read(src/**/*.java)",
+      "Read(README.md)",
+      "Read(constitution.md)",
+      "Read(specs/**)",
+      "Read(application*.yml)",
+      "Read(application*.properties)",
+      "Grep",
+      "Glob",
+      "LS",
+      "Bash(java:version)",
+      "Bash(mvn:version)",
+      "Bash(mvn:clean:*)",
+      "Bash(mvn:compile)",
+      "Bash(mvn:package)",
+      "Bash(mvn:test)",
+      "Bash(mvn:test:pl:*)",
+      "Bash(mvn:test:Dtest:*)",
+      "Bash(mvn:install)",
+      "Bash(mvn:dependency:*)"
+    ],
+    "ask": [
+      "Write",
+      "Edit",
+      "MultiEdit",
+      "Bash(mvn:add)",
+      "Bash(git:add:*)",
+      "Bash(git:commit:*)"
+    ],
+    "deny": [
+      "Read(./.env*)",
+      "Read(*.pem)",
+      "Read(*.key)",
+      "Bash(rm:*)",
+      "Bash(git:push:*)",
+      "WebFetch"
+    ]
+  }
+}

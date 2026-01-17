@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: glm-admin
+  profiles:
+    active: dev  # 默认使用开发环境
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres?currentSchema=xie_tm
+    username: postgres
+    password: ${DB_PASSWORD}
+
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  type-aliases-package: com.xie.glm.system.domain
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+
+jwt:
+  secret: ${JWT_SECRET:dev-secret-key-please-change}
+  access-token-expiration: 1800000   # 30分钟
+  refresh-token-expiration: 604800000  # 7天
+
+logging:
+  level:
+    com.xie.glm: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
