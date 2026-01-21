@@ -1,0 +1,68 @@
+spring:
+  application:
+    name: glm-admin
+  profiles:
+    active: dev  # 默认使用开发环境
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres?currentSchema=xie_tm
+    username: postgres
+    password: ${DB_PASSWORD}
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      database: ${REDIS_DATABASE:0}
+
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  type-aliases-package: com.xie.glm.system.domain
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+
+jwt:
+  secret: ${JWT_SECRET:4085eeeb53ab89f4e36790184e17e10e4b5c0202935e5d1d7d8f3c1a6b2e9d7f}
+  access-token-expiration: 1800000   # 30分钟
+  refresh-token-expiration: 604800000  # 7天
+
+user:
+  security:
+    default-password: ${DEFAULT_PASSWORD:123456}
+
+# CORS 配置
+cors:
+  enabled: ${CORS_ENABLED:true}
+  allowed-origins: ${CORS_ORIGINS:*}
+  allowed-methods:
+    - GET
+    - POST
+    - PUT
+    - PATCH
+    - DELETE
+    - OPTIONS
+  allowed-headers: "*"
+  exposed-headers:
+    - Authorization
+    - Content-Type
+  allow-credentials: true  # 启用凭证，支持 HttpOnly Cookie
+  max-age: 3600
+
+# Cookie 配置（用于 Refresh Token）
+cookie:
+  name: refresh_token
+  max-age: 604800  # 7 天（与 refresh-token-expiration 一致）
+  path: /
+  http-only: true  # 防止 XSS 窃取
+  secure: false    # 开发环境为 false，生产环境应为 true
+  same-site: Lax   # 防止 CSRF（开发环境 Lax，生产环境建议 Strict）
+
+logging:
+  level:
+    com.xie.glm: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
+
+# Knife4j API 文档配置
+knife4j:
+  enable: true  # 启用 Knife4j 文档（生产环境建议设置为 false）
