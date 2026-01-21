@@ -26,7 +26,7 @@ public final class ExcelUtil {
      * 私有构造函数，防止实例化
      */
     private ExcelUtil() {
-        throw new ServiceException(BusinessStatus.SYSTEM_ERROR);
+        // 工具类，不允许实例化
     }
 
     // ==================== 导出 ====================

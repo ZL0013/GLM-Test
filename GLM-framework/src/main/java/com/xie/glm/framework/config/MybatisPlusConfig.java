@@ -2,7 +2,9 @@ package com.xie.glm.framework.config;
 
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.DataPermissionInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
+import com.xie.glm.framework.security.DataPermissionHandlerImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -14,7 +16,7 @@ import org.springframework.context.annotation.Configuration;
  * <p>功能说明：
  * <ul>
  *   <li>分页插件：自动识别数据库类型，生成分页 SQL</li>
- *   <li>数据权限插件：根据用户权限自动过滤数据（待实现）</li>
+ *   <li>数据权限插件：根据用户权限自动过滤数据</li>
  * </ul>
  *
  * <p>设计原则：
@@ -32,13 +34,20 @@ public class MybatisPlusConfig {
     /**
      * 配置 MyBatis Plus 拦截器
      *
-     * <p>包含分页插件，自动识别数据库类型并生成分页 SQL。
+     * <p>包含分页插件和数据权限插件。
+     * <p>插件执行顺序：数据权限插件 → 分页插件（数据权限优先执行）
      *
      * @return MybatisPlusInterceptor 实例
      */
     @Bean
     public MybatisPlusInterceptor mybatisPlusInterceptor() {
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
+
+        // 添加数据权限插件
+        DataPermissionInterceptor dataPermissionInterceptor = new DataPermissionInterceptor();
+        // 设置数据权限处理器
+        dataPermissionInterceptor.setDataPermissionHandler(new DataPermissionHandlerImpl());
+        interceptor.addInnerInterceptor(dataPermissionInterceptor);
 
         // 添加分页插件
         PaginationInnerInterceptor paginationInnerInterceptor = new PaginationInnerInterceptor();

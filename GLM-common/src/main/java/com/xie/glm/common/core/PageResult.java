@@ -1,9 +1,5 @@
 package com.xie.glm.common.core;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
@@ -15,47 +11,43 @@ import java.util.List;
  * <ul>
  *   <li>records：当前页的数据列表</li>
  *   <li>total：总记录数</li>
- *   <li>pageNum：当前页码</li>
- *   <li>pageSize：每页大小</li>
  * </ul>
+ *
+ * <p>使用 Java 14+ record 实现不可变性（符合宪法第一条第1.4款）
  *
  * @param <T> 记录类型
  * @author xie
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class PageResult<T> implements Serializable {
+public record PageResult<T>(List<T> records, Long total) implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
     /**
-     * 当前页的数据列表
+     * 获取当前页的数据列表（传统 getter 方法，兼容旧代码）
+     *
+     * @return 当前页的数据列表
      */
-    private List<T> records;
+    public List<T> getRecords() {
+        return records;
+    }
 
     /**
-     * 总记录数
+     * 获取总记录数（传统 getter 方法，兼容旧代码）
+     *
+     * @return 总记录数
      */
-    private Long total;
-
-    /**
-     * 当前页码
-     */
-    private Long pageNum;
-
-    /**
-     * 每页大小
-     */
-    private Long pageSize;
+    public Long getTotal() {
+        return total;
+    }
 
     /**
      * 计算总页数
      *
+     * @param pageSize 每页大小
      * @return 总页数
      */
-    public Long getPages() {
+    public Long getPages(Long pageSize) {
         if (total == null || pageSize == null || pageSize == 0) {
             return 0L;
         }

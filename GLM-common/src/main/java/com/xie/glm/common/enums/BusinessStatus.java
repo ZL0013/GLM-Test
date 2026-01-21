@@ -1,6 +1,6 @@
 package com.xie.glm.common.enums;
 
-import java.io.Serial;
+import lombok.Getter;
 import java.util.Arrays;
 
 /**
@@ -22,6 +22,7 @@ import java.util.Arrays;
  *
  * @author xie
  */
+@Getter
 public enum BusinessStatus {
 
     /**
@@ -41,6 +42,16 @@ public enum BusinessStatus {
      */
     SYSTEM_ERROR(10000, "系统异常"),
 
+    /**
+     * 未认证或令牌已过期
+     */
+    UNAUTHORIZED(10001, "未认证或令牌已过期"),
+
+    /**
+     * 无权访问
+     */
+    FORBIDDEN(10002, "无权访问"),
+
     // ==================== 用户模块 (11xxx) ====================
 
     /**
@@ -58,6 +69,26 @@ public enum BusinessStatus {
      */
     USER_ACCOUNT_DISABLED(11003, "账号已禁用"),
 
+    /**
+     * 用户名已存在
+     */
+    USER_NAME_DUPLICATE(11004, "用户名已存在"),
+
+    /**
+     * 邮箱已被使用
+     */
+    USER_EMAIL_DUPLICATE(11005, "邮箱已被使用"),
+
+    /**
+     * 手机号已被使用
+     */
+    USER_PHONE_DUPLICATE(11006, "手机号已被使用"),
+
+    /**
+     * 旧密码错误
+     */
+    USER_OLD_PASSWORD_ERROR(11007, "旧密码错误"),
+
     // ==================== 角色模块 (12xxx) ====================
 
     /**
@@ -70,6 +101,11 @@ public enum BusinessStatus {
      */
     ROLE_NAME_DUPLICATE(12002, "角色名称已存在"),
 
+    /**
+     * 角色权限字符串已存在
+     */
+    ROLE_KEY_DUPLICATE(12003, "角色权限字符串已存在"),
+
     // ==================== 菜单模块 (13xxx) ====================
 
     /**
@@ -81,6 +117,11 @@ public enum BusinessStatus {
      * 菜单存在子菜单，不允许删除
      */
     MENU_HAS_CHILD(13002, "菜单存在子菜单，不允许删除"),
+
+    /**
+     * 菜单名称已存在
+     */
+    MENU_NAME_DUPLICATE(13003, "菜单名称已存在"),
 
     // ==================== 部门模块 (14xxx) ====================
 
@@ -98,6 +139,86 @@ public enum BusinessStatus {
      * 部门存在用户，不允许删除
      */
     DEPT_HAS_USER(14003, "部门存在用户，不允许删除"),
+
+    /**
+     * 部门名称已存在
+     */
+    DEPT_NAME_DUPLICATE(14004, "部门名称已存在"),
+
+    // ==================== 字典模块 (16xxx) ====================
+
+    /**
+     * 字典类型已存在
+     */
+    DICT_TYPE_DUPLICATE(16001, "字典类型已存在"),
+
+    // ==================== 配置模块 (17xxx) ====================
+
+    /**
+     * 配置键名已存在
+     */
+    CONFIG_KEY_DUPLICATE(17001, "配置键名已存在"),
+
+    /**
+     * 系统内置配置不允许修改配置键名
+     */
+    CONFIG_KEY_READONLY(17002, "系统内置配置不允许修改配置键名"),
+
+    /**
+     * 系统内置配置不允许删除
+     */
+    CONFIG_READONLY(17003, "系统内置配置不允许删除"),
+
+    /**
+     * 配置ID不能为空
+     */
+    CONFIG_ID_NULL(17004, "配置ID不能为空"),
+
+    // ==================== 定时任务模块 (18xxx) ====================
+
+    /**
+     * 任务名称已存在
+     */
+    JOB_NAME_DUPLICATE(18001, "任务名称已存在"),
+
+    /**
+     * Cron 表达式不能为空
+     */
+    JOB_CRON_NULL(18002, "Cron 表达式不能为空"),
+
+    /**
+     * 调用目标不能为空
+     */
+    JOB_TARGET_NULL(18003, "调用目标不能为空"),
+
+    /**
+     * 任务 ID 不能为空
+     */
+    JOB_ID_NULL(18004, "任务 ID 不能为空"),
+
+    /**
+     * 任务已暂停，无法执行
+     */
+    JOB_PAUSED(18005, "任务已暂停，无法执行"),
+
+    /**
+     * 任务执行功能待实现
+     */
+    JOB_NOT_IMPLEMENTED(18006, "任务执行功能待实现"),
+
+    // ==================== 通知公告模块 (19xxx) ====================
+
+    /**
+     * 通知公告不存在
+     */
+    NOTICE_NOT_FOUND(19001, "通知公告不存在"),
+
+    // ==================== 操作日志模块 (20xxx) ====================
+
+    /**
+     * 操作日志不存在
+     */
+    OPER_LOG_NOT_FOUND(20001, "操作日志不存在"),
 
     // ==================== 工具类模块 (15xxx) ====================
 
@@ -170,23 +291,5 @@ public enum BusinessStatus {
      */
     public boolean isSuccess() {
         return SUCCESS == this;
-    }
-
-    /**
-     * 获取状态码
-     *
-     * @return 状态码
-     */
-    public Integer getCode() {
-        return code;
-    }
-
-    /**
-     * 获取状态描述
-     *
-     * @return 状态描述
-     */
-    public String getMessage() {
-        return message;
     }
 }

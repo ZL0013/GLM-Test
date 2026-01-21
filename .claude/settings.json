@@ -2,6 +2,8 @@
   "permissions": {
     "defaultMode": "plan",
     "allow": [
+      "Write",
+      "Edit",
       "Read(*.java)",
       "Read(pom.xml)",
       "Read(src/**/*.java)",
@@ -25,8 +27,6 @@
       "Bash(mvn:dependency:*)"
     ],
     "ask": [
-      "Write",
-      "Edit",
       "MultiEdit",
       "Bash(mvn:add)",
       "Bash(git:add:*)",

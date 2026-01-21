@@ -37,6 +37,24 @@
 - **4.3 (分层清晰):** 严格遵循Controller-Service-Repository分层，每一层只负责自己的职责。
 - **4.4 (全局响应包装):** 所有Controller接口必须使用统一的响应包装类。HTTP状态码固定`200 OK`，业务状态通过响应体`code`判断。响应格式：`{"code": 0, "message": "success", "data": {}}`。业务错误码采用三段式枚举：`系统级别(1位) + 模块(2位) + 错误类型(2位)`，如`10101`。
 - **4.5 (RESTful规范):** 严格遵循RESTful Level 2-3规范。GET查询、POST创建、PUT完整更新、PATCH部分更新、DELETE删除。URL使用名词复数表示资源，禁止使用动词（如`/getUsers`）。
+- **4.6 (MyBatis Plus实体类):** **不可协商**：所有数据库实体类必须添加MyBatis Plus注解。
+    - **4.6.1 (@TableName):** 必须使用`@TableName("schema.table_name")`注解指定完整表名（包含schema）。
+    - **4.6.2 (@TableId):** 主键字段必须使用`@TableId(value = "column_name", type = IdType.AUTO)`注解。PostgreSQL使用序列自增，type固定为`IdType.AUTO`。
+    - **4.6.3 (字段映射):** 字段名使用驼峰命名，数据库列名使用下划线命名。MyBatis Plus自动转换，无需`@TableField`注解。
+    - **4.6.4 (代码模板):** 实体类必须遵循以下模板：
+    ```java
+    @Data
+    @EqualsAndHashCode(callSuper = true)
+    @TableName("xie_tm.table_name")
+    public class Entity extends BaseEntity {
+        @Serial
+        private static final long serialVersionUID = 1L;
+
+        @TableId(value = "id_column", type = IdType.AUTO)
+        private Long id;
+        // 其他字段...
+    }
+    ```
 
 ---
 
@@ -45,6 +63,47 @@
 - **5.1 (自定义异常):** 业务异常继承自`RuntimeException`，保持异常体系简洁。
 - **5.2 (全局异常处理):** 使用`@ControllerAdvice` + `@ExceptionHandler`统一处理异常。
 - **5.3 (数据访问异常):** 数据库操作使用Spring Data的异常转换机制。
+- **5.4 (BusinessStatus枚举规范):** 抛出业务异常时，优先使用`BusinessStatus`枚举。如果枚举中不存在对应的状态码，AI应：
+  1. **自动创建**新的枚举值（遵循命名和错误码规则）
+  2. **向用户提示**新增的内容和原因
+
+**枚举值创建规则：**
+```
+命名格式：[模块前缀]_[错误类型]_[可选修饰词]
+错误码格式：系统(1位) + 模块(2位) + 序号(2位)
+
+示例：
+USER_NOT_FOUND(11001, "用户不存在")
+USER_NAME_DUPLICATE(11004, "用户名已存在")
+ROLE_NOT_FOUND(12001, "角色不存在")
+
+当前已分配模块：
+- 10xxx: 系统模块
+- 11xxx: 用户模块
+- 12xxx: 角色模块
+- 13xxx: 菜单模块
+- 14xxx: 部门模块
+- 15xxx: 工具类模块
+- 16xxx: 字典模块
+- 17xxx: 配置模块
+- 18xxx: 定时任务模块
+- 19xxx: 通知公告模块
+- 20xxx: 操作日志模块
+- 21xxx+: 新模块（按需分配）
+```
+
+**AI 工作流程：**
+```
+检测到字符串异常 → 检查 BusinessStatus 枚举
+                              │
+                   ┌──────────┴──────────┐
+                   │                      │
+              枚举存在              枚举不存在
+                   │                      │
+              使用枚举          1. 创建新枚举值
+                                2. 更新 JavaDoc
+                                3. 向用户报告
+```
 
 ---
 
@@ -54,7 +113,6 @@
 - **6.2 (权限校验):** 使用Spring Security自定义注解 + EL表达式进行声明式权限校验。
 - **6.3 (无状态):** 服务端不存储会话状态，所有用户状态和权限信息编码在JWT中。
 
----
 
 ## 治理 (Governance)
 本宪法具有最高优先级，其效力高于任何`CLAUDE.md`或单次会话中的指令。

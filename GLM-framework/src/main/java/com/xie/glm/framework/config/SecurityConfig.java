@@ -1,5 +1,9 @@
 package com.xie.glm.framework.config;
 
+import com.xie.glm.framework.security.CustomAccessDeniedHandler;
+import com.xie.glm.framework.security.JwtAuthenticationEntryPoint;
+import com.xie.glm.framework.security.JwtAuthenticationFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,6 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 /**
  * Spring Security 6 配置类
@@ -23,6 +28,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  *   <li>BCrypt 密码加密</li>
  *   <li>公开接口白名单</li>
  *   <li>方法级权限校验</li>
+ *   <li>异常处理（401 未认证 / 403 无权限）</li>
  * </ul>
  *
  * @author xie
@@ -30,7 +36,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final JwtAuthenticationEntryPoint authenticationEntryPoint;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final CorsConfigurationSource corsConfigurationSource;
 
     /**
      * 配置 SecurityFilterChain
@@ -74,8 +86,17 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
 
-                // 禁用 CORS（生产环境需要配置）
-                .cors(AbstractHttpConfigurer::disable);
+                // 配置 CORS
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
+
+                // 配置异常处理
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(authenticationEntryPoint)
+                        .accessDeniedHandler(accessDeniedHandler)
+                )
+
+                // 添加 JWT 认证过滤器（在 UsernamePasswordAuthenticationFilter 之前）
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
