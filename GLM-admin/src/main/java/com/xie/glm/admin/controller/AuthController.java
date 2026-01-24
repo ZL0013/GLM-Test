@@ -71,7 +71,7 @@ public class AuthController {
      */
     @PostMapping("/login")
     @Operation(summary = "用户登录", description = "使用用户名和密码登录，Access Token 返回在响应体，Refresh Token 设置在 HttpOnly Cookie")
-    public LoginResponse login(@Valid @RequestBody LoginRequest request,) {
+    public LoginResponse login(@Valid @RequestBody LoginRequest request) {
         // 当前简化实现：只返回 Access Token
         return authService.login(request);
     }
