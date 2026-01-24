@@ -2745,6 +2745,56 @@ CREATE INDEX idx_sys_oper_log_ot ON xie_tm.sys_oper_log USING btree (oper_time);
 CREATE INDEX idx_sys_oper_log_s ON xie_tm.sys_oper_log USING btree (status);
 
 
+-- ================================================================
+-- Token 注册表
+-- ================================================================
+
+CREATE TABLE xie_tm.sys_token_registry (
+                                           id BIGSERIAL PRIMARY KEY,
+                                           access_token_id VARCHAR(36) NOT NULL,
+                                           refresh_token_hash VARCHAR(64) NOT NULL,
+                                           "user_id" BIGINT NOT NULL,                      -- 加双引号，user 是保留字
+                                           username VARCHAR(50) NOT NULL,
+                                           device_fingerprint VARCHAR(64),
+                                           access_expr_at TIMESTAMP NOT NULL,
+                                           refresh_expr_at TIMESTAMP NOT NULL,
+                                           is_revoked BOOLEAN DEFAULT FALSE,
+                                           revoked_at TIMESTAMP,
+                                           revoke_reason VARCHAR(50),
+                                           version BIGINT DEFAULT 0,
+                                           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+                                           CONSTRAINT uk_token_access_id UNIQUE (access_token_id),
+                                           CONSTRAINT uk_token_refresh_hash UNIQUE (refresh_token_hash)
+);
+
+-- 索引（user_id 也要加双引号）
+CREATE INDEX idx_token_user ON xie_tm.sys_token_registry("user_id", is_revoked);
+CREATE INDEX idx_token_access_expr ON xie_tm.sys_token_registry(access_expr_at);
+CREATE INDEX idx_token_refresh_expr ON xie_tm.sys_token_registry(refresh_expr_at);
+CREATE INDEX idx_token_device ON xie_tm.sys_token_registry(device_fingerprint);
+
+-- 注释
+COMMENT ON TABLE xie_tm.sys_token_registry IS 'Token 注册表：维护 Access Token 与 Refresh Token
+  的映射关系';
+COMMENT ON COLUMN xie_tm.sys_token_registry.id IS '主键';
+COMMENT ON COLUMN xie_tm.sys_token_registry.access_token_id IS 'Access Token 唯一标识（UUID），嵌入在
+   JWT payload 的 tokenId 字段中';
+COMMENT ON COLUMN xie_tm.sys_token_registry.refresh_token_hash IS 'Refresh Token 的 SHA-256 哈希值';
+COMMENT ON COLUMN xie_tm.sys_token_registry."user_id" IS '用户ID';
+COMMENT ON COLUMN xie_tm.sys_token_registry.username IS '用户名';
+COMMENT ON COLUMN xie_tm.sys_token_registry.device_fingerprint IS '设备指纹';
+COMMENT ON COLUMN xie_tm.sys_token_registry.access_expr_at IS 'Access Token 过期时间（2小时）';
+COMMENT ON COLUMN xie_tm.sys_token_registry.refresh_expr_at IS 'Refresh Token 过期时间（7天）';
+COMMENT ON COLUMN xie_tm.sys_token_registry.is_revoked IS '是否已撤销';
+COMMENT ON COLUMN xie_tm.sys_token_registry.revoked_at IS '撤销时间';
+COMMENT ON COLUMN xie_tm.sys_token_registry.revoke_reason IS '撤销原因: KICK_OUT, PWD_CHANGE,
+  PERM_CHANGE, ADMIN_REVOKE';
+COMMENT ON COLUMN xie_tm.sys_token_registry.version IS '乐观锁版本号';
+COMMENT ON COLUMN xie_tm.sys_token_registry.created_at IS '创建时间';
+COMMENT ON COLUMN xie_tm.sys_token_registry.updated_at IS '更新时间';
+
 --
 -- PostgreSQL database dump complete
 --

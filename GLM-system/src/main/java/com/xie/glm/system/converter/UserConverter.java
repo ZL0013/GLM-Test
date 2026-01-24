@@ -44,9 +44,12 @@ public interface UserConverter {
      *
      * <p>用于将数据库查询结果转换为返回给前端的 DTO
      *
+     * <p>注意：密码字段不会被转换（安全性）
+     *
      * @param entity 用户实体
      * @return 用户 DTO
      */
+    @Mapping(target = "password", ignore = true)
     UserDTO toDto(SysUser entity);
 
     /**
@@ -54,9 +57,12 @@ public interface UserConverter {
      *
      * <p>用于将用户列表转换为 DTO 列表
      *
+     * <p>注意：密码字段不会被转换（安全性）
+     *
      * @param entities 用户实体列表
      * @return 用户 DTO 列表
      */
+    @Mapping(target = "password", ignore = true)
     List<UserDTO> toDtoList(List<SysUser> entities);
 
     /**

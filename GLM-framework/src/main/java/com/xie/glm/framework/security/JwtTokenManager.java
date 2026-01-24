@@ -87,4 +87,31 @@ public interface JwtTokenManager {
      * @return Token 载荷，如果 token 无效则返回 null
      */
     TokenPayload extractTokenPayload(String token);
+
+    /**
+     * 从 Access Token 中提取 Token ID（UUID）
+     *
+     * <p>Token ID 用于在 Token 注册表中查找对应的 token 记录。
+     *
+     * @param token JWT access token
+     * @return Token ID（UUID），如果 token 无效则返回 null
+     */
+    String extractAccessTokenId(String token);
+
+    /**
+     * 生成新的 Access Token ID（UUID）
+     *
+     * @return UUID 字符串
+     */
+    String generateAccessTokenId();
+
+    /**
+     * 从过期的 Access Token 中提取 Token ID（忽略过期时间）
+     *
+     * <p>验证 JWT 签名但不验证过期时间，用于 Token 刷新流程。
+     *
+     * @param expiredAccessToken 过期的 JWT access token
+     * @return Token ID（UUID），如果 token 签名无效则返回 null
+     */
+    String extractAccessTokenIdFromExpiredToken(String expiredAccessToken);
 }

@@ -13,7 +13,7 @@ mybatis-plus:
 
 jwt:
   secret: ${JWT_SECRET:4085eeeb53ab89f4e36790184e17e10e4b5c0202935e5d1d7d8f3c1a6b2e9d7f}
-  access-token-expiration: 1800000   # 30分钟
+  access-token-expiration: 7200000   # 120分钟
   refresh-token-expiration: 604800000  # 7天
 
 logging:

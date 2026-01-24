@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * JWT Token 管理器实现
@@ -44,6 +45,7 @@ public class JwtTokenManagerImpl implements JwtTokenManager {
     private static final String CLAIM_KEY_USER_ID = "userId";
     private static final String CLAIM_KEY_DEPT_ID = "deptId";
     private static final String CLAIM_KEY_DATA_SCOPE = "dataScope";
+    private static final String CLAIM_KEY_ACCESS_TOKEN_ID = "accessTokenId";
 
     /**
      * 获取签名密钥
@@ -157,8 +159,10 @@ public class JwtTokenManagerImpl implements JwtTokenManager {
     public String generateAccessToken(TokenPayload payload) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtProperties.getAccessTokenExpiration());
+        String accessTokenId = generateAccessTokenId();
 
         return Jwts.builder()
+                .claim(CLAIM_KEY_ACCESS_TOKEN_ID, accessTokenId)
                 .claim(CLAIM_KEY_USER_ID, payload.userId())
                 .claim(CLAIM_KEY_USERNAME, payload.username())
                 .claim(CLAIM_KEY_DEPT_ID, payload.deptId())
@@ -168,6 +172,22 @@ public class JwtTokenManagerImpl implements JwtTokenManager {
                 .expiration(expiryDate)
                 .signWith(getSigningKey())
                 .compact();
+    }
+
+    @Override
+    public String extractAccessTokenId(String token) {
+        try {
+            Claims claims = extractClaims(token);
+            return claims.get(CLAIM_KEY_ACCESS_TOKEN_ID, String.class);
+        } catch (JwtException e) {
+            log.debug("解析 accessTokenId 失败: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    @Override
+    public String generateAccessTokenId() {
+        return UUID.randomUUID().toString();
     }
 
     @Override
@@ -197,6 +217,30 @@ public class JwtTokenManagerImpl implements JwtTokenManager {
             return new TokenPayload(userId, username, deptId, dataScope);
         } catch (JwtException e) {
             log.debug("解析 TokenPayload 失败: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    @Override
+    public String extractAccessTokenIdFromExpiredToken(String expiredAccessToken) {
+        try {
+            // 使用允许过期时间的解析器（仅验证签名，不验证过期时间）
+            Claims claims = Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .build()
+                    .parseSignedClaims(expiredAccessToken)
+                    .getPayload();
+
+            // 验证 token 类型必须是 access
+            String tokenType = claims.get(CLAIM_KEY_TOKEN_TYPE, String.class);
+            if (!TOKEN_TYPE_ACCESS.equals(tokenType)) {
+                log.debug("Token 类型错误，期望: {}, 实际: {}", TOKEN_TYPE_ACCESS, tokenType);
+                return null;
+            }
+
+            return claims.get(CLAIM_KEY_ACCESS_TOKEN_ID, String.class);
+        } catch (JwtException e) {
+            log.debug("解析过期的 Access Token 失败: {}", e.getMessage());
             return null;
         }
     }

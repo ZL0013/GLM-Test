@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotBlank;
  *
  * @param username 用户名
  * @param password 密码
+ * @param deviceFingerprint 设备指纹（可选）
  * @author xie
  */
 public record LoginRequest(
@@ -23,6 +24,11 @@ public record LoginRequest(
          * 密码
          */
         @NotBlank(message = "密码不能为空")
-        String password
+        String password,
+
+        /**
+         * 设备指纹（可选，用于区分不同设备）
+         */
+        String deviceFingerprint
 ) {
 }

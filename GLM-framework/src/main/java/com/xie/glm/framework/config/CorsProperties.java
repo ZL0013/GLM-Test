@@ -1,5 +1,6 @@
 package com.xie.glm.framework.config;
 
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +16,7 @@ import java.util.List;
  */
 @Component
 @ConfigurationProperties(prefix = "cors")
+@Data
 public class CorsProperties {
 
     /**
@@ -28,6 +30,12 @@ public class CorsProperties {
      * <p>默认允许所有源，生产环境应该配置具体的域名
      */
     private List<String> allowedOrigins = Arrays.asList("*");
+
+    /**
+     * 允许的源模式
+     * <p>支持精确匹配、通配符和模式（如 http://localhost:*）
+     */
+    private List<String> allowedOriginPatterns = Arrays.asList("*");
 
     /**
      * 允许的 HTTP 方法
@@ -54,60 +62,4 @@ public class CorsProperties {
      * 预检请求的有效期（秒）
      */
     private long maxAge = 3600L;
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public List<String> getAllowedOrigins() {
-        return allowedOrigins;
-    }
-
-    public void setAllowedOrigins(List<String> allowedOrigins) {
-        this.allowedOrigins = allowedOrigins;
-    }
-
-    public List<String> getAllowedMethods() {
-        return allowedMethods;
-    }
-
-    public void setAllowedMethods(List<String> allowedMethods) {
-        this.allowedMethods = allowedMethods;
-    }
-
-    public List<String> getAllowedHeaders() {
-        return allowedHeaders;
-    }
-
-    public void setAllowedHeaders(List<String> allowedHeaders) {
-        this.allowedHeaders = allowedHeaders;
-    }
-
-    public List<String> getExposedHeaders() {
-        return exposedHeaders;
-    }
-
-    public void setExposedHeaders(List<String> exposedHeaders) {
-        this.exposedHeaders = exposedHeaders;
-    }
-
-    public boolean isAllowCredentials() {
-        return allowCredentials;
-    }
-
-    public void setAllowCredentials(boolean allowCredentials) {
-        this.allowCredentials = allowCredentials;
-    }
-
-    public long getMaxAge() {
-        return maxAge;
-    }
-
-    public void setMaxAge(long maxAge) {
-        this.maxAge = maxAge;
-    }
 }

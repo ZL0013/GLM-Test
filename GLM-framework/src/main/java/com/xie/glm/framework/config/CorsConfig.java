@@ -30,7 +30,7 @@ public class CorsConfig {
         }
 
         // 配置允许的源
-        configuration.setAllowedOrigins(corsProperties.getAllowedOrigins());
+        configuration.setAllowedOriginPatterns(corsProperties.getAllowedOriginPatterns());
 
         // 配置允许的方法
         configuration.setAllowedMethods(corsProperties.getAllowedMethods());

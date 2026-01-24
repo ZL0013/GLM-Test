@@ -18,6 +18,7 @@ import java.util.Arrays;
    *   <li>13xxx：菜单模块</li>
    <li>14xxx：部门模块</li>
    *   <li>15xxx：工具类模块</li>
+ *   <li>21xxx：Token 模块</li>
  * </ul>
  *
  * @author xie
@@ -245,7 +246,34 @@ public enum BusinessStatus {
     /**
      * Excel 导入失败
      */
-    EXCEL_IMPORT_FAILED(15005, "Excel 导入失败");
+    EXCEL_IMPORT_FAILED(15005, "Excel 导入失败"),
+
+    // ==================== Token 模块 (21xxx) ====================
+
+    /**
+     * Token 不存在或已失效
+     */
+    TOKEN_NOT_FOUND(21001, "Token 不存在或已失效"),
+
+    /**
+     * Token 已过期
+     */
+    TOKEN_EXPIRED(21002, "Token 已过期"),
+
+    /**
+     * Token 已撤销
+     */
+    TOKEN_REVOKED(21003, "Token 已撤销"),
+
+    /**
+     * Refresh Token 无效
+     */
+    REFRESH_TOKEN_INVALID(21004, "Refresh Token 无效"),
+
+    /**
+     * Access Token 无效（签名验证失败）
+     */
+    ACCESS_TOKEN_INVALID(21005, "Access Token 无效");
 
     /**
      * 状态码
